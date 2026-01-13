@@ -135,13 +135,13 @@ const ojRoutes = [
     path: '/contest/acm-scoreboard/:contestID',
     name: 'ACMScoreBoard',
     component: ACMScoreBoard,
-    meta: {requireAuth: true,  title: 'ACM Contest ScoreBoard' }
+    meta: {requireAuth: false,  title: 'ACM Contest ScoreBoard' }
   },
   {
     path: '/contest/oi-scoreboard/:contestID',
     name: 'OIScoreBoard',
     component: OIScoreBoard,
-    meta: {requireAuth: true,  title: 'OI Contest ScoreBoard' }
+    meta: {requireAuth: false,  title: 'OI Contest ScoreBoard' }
   },
   {
     name: 'ContestDetails',
