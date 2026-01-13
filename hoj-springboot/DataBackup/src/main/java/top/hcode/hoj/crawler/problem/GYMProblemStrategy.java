@@ -1,5 +1,6 @@
 package top.hcode.hoj.crawler.problem;
 
+import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.ReUtil;
 import cn.hutool.http.HttpRequest;
@@ -27,7 +28,7 @@ import java.util.regex.Pattern;
 
 public class GYMProblemStrategy extends CFProblemStrategy {
 
-    public static final String IMAGE_HOST = "https://codeforces.com";
+    public static final String IMAGE_HOST = "https://codeforc.es";
 
     public static final String LOGIN_URL = "/enter";
 
@@ -44,7 +45,7 @@ public class GYMProblemStrategy extends CFProblemStrategy {
 
     @Override
     public String getProblemSource(String html, String problemId, String contestNum, String problemNum) {
-        return String.format("<p>Problem：<a style='color:#1A5CC8' href='https://codeforces.com/gym/%s/problem/%s'>%s</a></p><p>" +
+        return String.format("<p>Problem：<a style='color:#1A5CC8' href='https://codeforc.es/gym/%s/problem/%s'>%s</a></p><p>" +
                         "Contest：" + ReUtil.get("(<a[^<>]+/gym/\\d+\">.+?</a>)", html, 1)
                         .replace("/gym", HOST + "/gym")
                         .replace("color: black", "color: #009688;") + "</p>",
@@ -107,7 +108,7 @@ public class GYMProblemStrategy extends CFProblemStrategy {
         problem.setTimeLimit((int) (Double.parseDouble(matcher.group(3)) * 1000));
         problem.setMemoryLimit(Integer.parseInt(matcher.group(4)));
 
-        problem.setSource(String.format("<p>Problem：<a style='color:#1A5CC8' href='https://codeforces.com/gym/%s/attachments'>%s</a></p><p>" +
+        problem.setSource(String.format("<p>Problem：<a style='color:#1A5CC8' href='https://codeforc.es/gym/%s/attachments'>%s</a></p><p>" +
                         "Contest：" + ReUtil.get("(<a[^<>]+/gym/\\d+\">.+?</a>)", html, 1)
                         .replace("/gym", HOST + "/gym")
                         .replace("color: black", "color: #009688;") + "</p>",
@@ -127,6 +128,7 @@ public class GYMProblemStrategy extends CFProblemStrategy {
                 }
                 String fileName = IdUtil.fastSimpleUUID() + ".pdf";
                 String filePath = Constants.File.PROBLEM_FILE_FOLDER.getPath() + File.separator + fileName;
+                FileUtil.mkdir(Constants.File.PROBLEM_FILE_FOLDER.getPath());
                 CodeForcesUtils.downloadPDF(IMAGE_HOST + uri, filePath);
                 pdfURI = Constants.File.FILE_API.getPath() + fileName;
 
@@ -140,6 +142,7 @@ public class GYMProblemStrategy extends CFProblemStrategy {
                 try {
                     String fileName = IdUtil.fastSimpleUUID() + ".pdf";
                     String filePath = Constants.File.PROBLEM_FILE_FOLDER.getPath() + File.separator + fileName;
+                    FileUtil.mkdir(Constants.File.PROBLEM_FILE_FOLDER.getPath());
                     CodeForcesUtils.downloadPDF(HOST + "/gym/" + contestNum + "/problem/" + problemNum, filePath);
                     pdfURI = Constants.File.FILE_API.getPath() + fileName;
                 } catch (Exception e2) {

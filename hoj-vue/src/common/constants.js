@@ -140,33 +140,64 @@ export const JUDGE_STATUS_RESERVE={
 export const PROBLEM_LEVEL={
   '0':{
     name:{
-      'zh-CN':'简单',
-      'en-US':'Easy',
-      'zh-TW':'簡單',
-      'ja-JP':'簡単',
-      'ko-KR':'간단한'
+      'zh-CN':'No Level',
+      'en-US':'No Level',
     },
-    color:'#19be6b'
-  },
-  '1':{
+    color:'#AD9F9F'
+  },'1':{
     name:{
-      'zh-CN':'中等',
-      'en-US':'Mid',
-      'zh-TW':'中等',
-      'ja-JP':'中等',
-      'ko-KR':'중간'
+      'zh-CN':'Level1',
+      'en-US':'Level1',
     },
-    color:'#2d8cf0'
-  },
-  '2':{
+    color:'#FF0000'
+  },'2':{
     name:{
-      'zh-CN':'困难',
-      'en-US':'Hard',
-      'zh-TW':'困難​​',
-      'ja-JP':'困難',
-      'ko-KR':'곤란'
+      'zh-CN':'Level2',
+      'en-US':'Level2',
     },
-    color:'#ed3f14'
+    color:'#FF8400'
+  },'3':{
+    name:{
+      'zh-CN':'Level3',
+      'en-US':'Level3',
+    },
+    color:'#FFFB00'
+  },'4':{
+    name:{
+      'zh-CN':'Level4',
+      'en-US':'Level4',
+    },
+    color:'#80FF00'
+  },'5':{
+    name:{
+      'zh-CN':'Level5',
+      'en-US':'Level5',
+    },
+    color:'#00F7FF'
+  },'6':{
+    name:{
+      'zh-CN':'Level6',
+      'en-US':'Level6',
+    },
+    color:'#001EFF'
+  },'7':{
+    name:{
+      'zh-CN':'Level7',
+      'en-US':'Level7',
+    },
+    color:'#D500FF'
+  },'8':{
+    name:{
+      'zh-CN':'Level8',
+      'en-US':'Level8',
+    },
+    color:'#0F65B5'
+  },'9':{
+    name:{
+      'zh-CN':'Level9',
+      'en-US':'Level9',
+    },
+    color:'#000000'
   }
 }
 

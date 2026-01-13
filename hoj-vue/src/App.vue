@@ -1,4 +1,5 @@
 <template>
+  <div v-loading="diffload">
   <div id="app">
     <el-backtop :right="10"></el-backtop>
     <div v-if="!isAdminView" class="full-height flex-column">
@@ -35,9 +36,6 @@
               <p>
                 <a @click="goRoute('/status')">{{ $t('m.Judging_Queue') }}</a>
               </p>
-              <p>
-                <a @click="goRoute('/developer')">{{ $t('m.System_Info') }}</a>
-              </p>
             </el-col>
             <el-col class="hr-none">
               <el-divider></el-divider>
@@ -49,13 +47,12 @@
               <h1>{{ $t('m.Development') }}</h1>
               <p class="mb-1">
                 <a
-                  href="https://gitee.com/himitzh0730/hoj"
+                  href="https://github.com/TLE-Automaton/MoeOJ"
                   target="_blank"
                 >{{
                   $t('m.Open_Source')
                 }}</a>
               </p>
-              <p class="mb-1"><a @click="goRoute('/#')">API</a></p>
             </el-col>
             <el-col class="hr-none">
               <el-divider></el-divider>
@@ -71,28 +68,32 @@
                   aria-hidden="true"
                 ></i><a @click="goRoute('/introduction')"> {{ $t('m.NavBar_About') }}</a>
               </p>
-              <p>
-                <i class="el-icon-document"></i>
-                <a
-                  href="https://docs.hdoi.cn"
-                  target="_blank"
-                > {{ $t('m.Help') }}</a>
-              </p>
             </el-col>
           </el-row>
         </div>
         <div class="mundb-footer">
+        <p>
           <a
             style="color:#1E9FFF"
             :href="websiteConfig.recordUrl"
             target="_blank"
           >{{ websiteConfig.recordName }}</a>
+        </p>
+        <p>
           Powered by
           <a
             :href="websiteConfig.projectUrl"
             style="color:#1E9FFF"
             target="_blank"
           >{{ websiteConfig.projectName }}</a>
+          , Modified by 
+          <a
+            href="https://github.com/TLE-Automaton"
+            style="color:#1E9FFF"
+            target="_blank">TLE_Automaton</a>
+        </p>
+        <p> <a>{{ $t('m.ServerTime') + ' : ' + this.dateFormat(this.date) }}</a> </p>
+        <p>
           <span style="margin-left:10px">
             <el-dropdown
               @command="changeWebLanguage"
@@ -114,6 +115,7 @@
               </el-dropdown-menu>
             </el-dropdown>
           </span>
+        </p>
         </div>
       </footer>
     </div>
@@ -124,6 +126,7 @@
         </transition>
       </div>
     </div>
+  </div>
   </div>
 </template>
 
@@ -141,9 +144,13 @@ export default {
   },
   data() {
     return {
+      diff: 0,
       isAdminView: false,
       showFooter: true,
       languages:[],
+      diffload: false,
+      date: new Date(),
+      d1 : new Date()
     };
   },
   methods: {
@@ -153,8 +160,66 @@ export default {
         path: path,
       });
     },
+    dateFormat(time) {
+      var date=new Date(new Date(time).getTime() + this.diff)
+      var year=date.getFullYear();
+      /* 在日期格式中，月份是从0开始的，因此要加0
+      * 使用三元表达式在小于10的前面加0，以达到格式统一  如 09:11:05
+      * */
+      var month= date.getMonth()+1<10 ? "0"+(date.getMonth()+1) : date.getMonth()+1;
+      var day=date.getDate()<10 ? "0"+date.getDate() : date.getDate();
+      var hours=date.getHours()<10 ? "0"+date.getHours() : date.getHours();
+      var minutes=date.getMinutes()<10 ? "0"+date.getMinutes() : date.getMinutes();
+      var seconds=date.getSeconds()<10 ? "0"+date.getSeconds() : date.getSeconds();
+      // 拼接
+      return year+"-"+month+"-"+day+" "+hours+":"+minutes+":"+seconds;
+    },
     changeWebLanguage(language) {
       this.$store.commit("changeWebLanguage", { language: language });
+    },
+    diffTime() {
+      var diff = this.diff;           // 记录服务器和客户端的时间差值
+      var lastTime;           // 记录上一次时间
+      this.diffload = true;
+      var that = this;
+      $(function(){
+        $.ajax({
+            url: "/api/home-carousel",
+            async: false,
+            success: function(res, state, xhr){
+            var serverTime = new Date(xhr.getResponseHeader("Date")).getTime();
+            var localTime = +new Date;
+            diff = serverTime - localTime;
+            // console.log(serverTime)
+            // console.log(localTime)
+            lastTime = localTime;
+            var InvertialMillSeconds = 2000;
+            var maxMillSeconds = 1000;
+            // 每InvertialSeconds毫秒检测一次当前时间，
+            // 若差值大于maxMillSeconds那么可以判断出客户端时间被修改了
+            var setTimeout = (function f(){
+                var nowTime = +new Date;
+                var InverDiff = nowTime - (lastTime + InvertialMillSeconds);
+                if(Math.abs(InverDiff) > maxMillSeconds){
+                    diff += InverDiff;
+                }
+                lastTime = nowTime;
+                setTimeout(arguments.callee, InvertialMillSeconds);
+            }, InvertialMillSeconds);
+            if (window.moment && window.moment.now) {
+                moment.now = function(){
+                    return Date.now ? Date.now() + diff : (new Date().getTime() + diff);
+                }
+            }
+            // location.reload();
+            // that.$forceUpdate()
+            that.diffload = false;
+            that.diff = diff;
+            // console.log(this.diffload);
+            // console.log(Date.now() + diff);
+          }
+        })
+      })
     },
     autoChangeLanguge() {
       /**
@@ -272,8 +337,18 @@ export default {
     this.languages = languages;
     console.log(LOGO);
     console.log(MOTTO);
+    this.diffTime();
     this.autoChangeLanguge();
     this.getWebsiteConfig();
+    let _this = this// 声明一个变量指向Vue实例this，保证作用域一致
+    this.timer = setInterval(() => {
+      _this.date = new Date(); // 修改数据date
+      }, 1000)
+  },
+  beforeDestroy: function () {
+    if (this.timer) {
+      clearInterval(this.timer)
+    }
   },
 };
 </script>
